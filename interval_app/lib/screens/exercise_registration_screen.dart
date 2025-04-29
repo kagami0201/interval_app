@@ -126,183 +126,188 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
         title: const Text('種目登録'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ReorderableListView.builder(
-              itemCount: _exercises.length,
-              onReorder: _onReorder,
-              itemBuilder: (context, index) {
-                final exercise = _exercises[index];
-                return ListTile(
-                  key: ValueKey(exercise),
-                  title: Text(exercise.name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text('実施: ${exercise.workTime}秒'),
-                      Text('休息: ${exercise.restTime}秒'),
-                      Text('セット: ${exercise.sets}'),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => _editExercise(exercise),
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 300,
+                child: ReorderableListView.builder(
+                  itemCount: _exercises.length,
+                  onReorder: _onReorder,
+                  itemBuilder: (context, index) {
+                    final exercise = _exercises[index];
+                    return ListTile(
+                      key: ValueKey(exercise),
+                      title: Text(exercise.name),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text('実施: ${exercise.workTime}秒'),
+                          Text('休息: ${exercise.restTime}秒'),
+                          Text('セット: ${exercise.sets}'),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteExercise(exercise),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _editExercise(exercise),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _deleteExercise(exercise),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
+                    );
+                  },
                 ),
-              ],
-            ),
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: '種目名',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        counterText: '',
-                      ),
-                      maxLength: 50,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '種目名を入力してください';
-                        }
-                        if (value.length > 50) {
-                          return '種目名は50文字以内で入力してください';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _workTimeController,
-                      decoration: const InputDecoration(
-                        labelText: '実施時間（秒）',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '実施時間を入力してください';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return '数値を入力してください';
-                        }
-                        final time = int.parse(value);
-                        if (time <= 0) {
-                          return '1秒以上を入力してください';
-                        }
-                        if (time > 999) {
-                          return '999秒以内で入力してください';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _restTimeController,
-                      decoration: const InputDecoration(
-                        labelText: '休息時間（秒）',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '休息時間を入力してください';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return '数値を入力してください';
-                        }
-                        final time = int.parse(value);
-                        if (time <= 0) {
-                          return '1秒以上を入力してください';
-                        }
-                        if (time > 999) {
-                          return '999秒以内で入力してください';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _setsController,
-                      decoration: const InputDecoration(
-                        labelText: 'セット数',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'セット数を入力してください';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return '数値を入力してください';
-                        }
-                        final sets = int.parse(value);
-                        if (sets <= 0) {
-                          return '1セット以上を入力してください';
-                        }
-                        if (sets > 999) {
-                          return '999セット以内で入力してください';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: _submitForm,
-                      icon: Icon(_editingExercise != null ? Icons.save : Icons.add),
-                      label: Text(_editingExercise != null ? '更新' : '登録'),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
                     ),
                   ],
                 ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: '種目名',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          counterText: '',
+                        ),
+                        maxLength: 50,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '種目名を入力してください';
+                          }
+                          if (value.length > 50) {
+                            return '種目名は50文字以内で入力してください';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _workTimeController,
+                        decoration: const InputDecoration(
+                          labelText: '実施時間（秒）',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '実施時間を入力してください';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return '数値を入力してください';
+                          }
+                          final time = int.parse(value);
+                          if (time <= 0) {
+                            return '1秒以上を入力してください';
+                          }
+                          if (time > 999) {
+                            return '999秒以内で入力してください';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _restTimeController,
+                        decoration: const InputDecoration(
+                          labelText: '休息時間（秒）',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '休息時間を入力してください';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return '数値を入力してください';
+                          }
+                          final time = int.parse(value);
+                          if (time <= 0) {
+                            return '1秒以上を入力してください';
+                          }
+                          if (time > 999) {
+                            return '999秒以内で入力してください';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _setsController,
+                        decoration: const InputDecoration(
+                          labelText: 'セット数',
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'セット数を入力してください';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return '数値を入力してください';
+                          }
+                          final sets = int.parse(value);
+                          if (sets <= 0) {
+                            return '1セット以上を入力してください';
+                          }
+                          if (sets > 999) {
+                            return '999セット以内で入力してください';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: _submitForm,
+                        icon: Icon(_editingExercise != null ? Icons.save : Icons.add),
+                        label: Text(_editingExercise != null ? '更新' : '登録'),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -54,6 +54,7 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
       _showBackgroundNotification();
     } else if (state == AppLifecycleState.resumed) {
       _notificationService.cancelAllNotifications();
+      _notificationService.clearBadge();
     }
   }
 

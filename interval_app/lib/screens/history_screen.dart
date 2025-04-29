@@ -78,6 +78,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   onDismissed: (direction) {
                     _deleteHistory(history.id!);
                   },
+                  dismissThresholds: const {
+                    DismissDirection.endToStart: 0.5,
+                  },
+                  movementDuration: const Duration(milliseconds: 300),
                   child: Card(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16.0,
@@ -126,11 +130,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                '合計時間',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.timer,
+                                    size: 20,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    '合計時間',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                               Text(
                                 _formatDuration(history.totalTime),

@@ -50,4 +50,8 @@ class NotificationService {
   Future<void> cancelAllNotifications() async {
     await AwesomeNotifications().cancelAll();
   }
+
+  Future<void> clearBadge() async {
+    await AwesomeNotifications().setGlobalBadgeCounter(0);
+  }
 } 

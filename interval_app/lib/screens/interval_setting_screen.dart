@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../models/exercise.dart';
 import '../services/database_service.dart';
 import 'training_screen.dart';
+import '../services/admob_service.dart';
 
 class IntervalSettingScreen extends StatefulWidget {
   const IntervalSettingScreen({super.key});
@@ -22,6 +23,7 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
   void initState() {
     super.initState();
     _loadExercises();
+    AdmobService().loadInterstitialAd();
   }
 
   Future<void> _loadExercises() async {
@@ -99,13 +101,14 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
       );
       return;
     }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TrainingScreen(exercises: _selectedExercises),
-      ),
-    );
+    AdmobService().showInterstitialAd(onAdClosed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TrainingScreen(exercises: _selectedExercises),
+        ),
+      );
+    });
   }
 
   @override

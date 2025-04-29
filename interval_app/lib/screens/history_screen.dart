@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/training_history.dart';
 import '../services/database_service.dart';
+import '../services/admob_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -18,6 +19,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     super.initState();
     _loadHistory();
+    AdmobService().showInterstitialAd();
+    AdmobService().loadInterstitialAd();
   }
 
   Future<void> _loadHistory() async {

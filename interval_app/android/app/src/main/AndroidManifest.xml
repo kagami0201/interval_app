@@ -13,6 +13,9 @@
         android:label="トレーニングタイマー"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7342113297911832~7549471896"/> <!-- 広告アプリID -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

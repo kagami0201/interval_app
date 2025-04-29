@@ -117,112 +117,152 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
       ),
       body: Column(
         children: [
+          // 登録済み種目リスト
           Expanded(
-            child: Row(
-              children: [
-                // 登録済み種目リスト
-                Expanded(
-                  child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            '登録済み種目',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: _exercises.length,
-                            itemBuilder: (context, index) {
-                              final exercise = _exercises[index];
-                              return ListTile(
-                                title: Text(exercise.name),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Text('実施: ${exercise.workTime}秒'),
-                                    Text('休息: ${exercise.restTime}秒'),
-                                    Text('セット: ${exercise.sets}'),
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: () => _addExercise(exercise),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+            child: Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '登録済み種目',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                // 選択済み種目リスト
-                Expanded(
-                  child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            '選択済み種目',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _exercises.length,
+                      itemBuilder: (context, index) {
+                        final exercise = _exercises[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          child: ListTile(
+                            title: Text(
+                              exercise.name,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildInfoChip('実施', '${exercise.workTime}秒'),
+                                _buildInfoChip('休息', '${exercise.restTime}秒'),
+                                _buildInfoChip('セット', '${exercise.sets}'),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.add_circle_outline),
+                              onPressed: () => _addExercise(exercise),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: ReorderableListView.builder(
-                            itemCount: _selectedExercises.length,
-                            onReorder: _onReorder,
-                            itemBuilder: (context, index) {
-                              final exercise = _selectedExercises[index];
-                              return ListTile(
-                                key: ValueKey(exercise),
-                                title: Text(exercise.name),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Text('実施: ${exercise.workTime}秒'),
-                                    Text('休息: ${exercise.restTime}秒'),
-                                    Text('セット: ${exercise.sets}'),
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  onPressed: () => _removeExercise(index),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+          // 選択済み種目リスト
+          Expanded(
+            child: Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '選択済み種目',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ReorderableListView.builder(
+                      itemCount: _selectedExercises.length,
+                      onReorder: _onReorder,
+                      itemBuilder: (context, index) {
+                        final exercise = _selectedExercises[index];
+                        return Card(
+                          key: ValueKey(exercise),
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          child: ListTile(
+                            leading: const Icon(Icons.drag_handle),
+                            title: Text(
+                              exercise.name,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildInfoChip('実施', '${exercise.workTime}秒'),
+                                _buildInfoChip('休息', '${exercise.restTime}秒'),
+                                _buildInfoChip('セット', '${exercise.sets}'),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              onPressed: () => _removeExercise(index),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // トレーニング開始ボタン
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: _startTraining,
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('トレーニング開始'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
-              child: const Text('トレーニング開始'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(width: 2),
+          Text(
+            value,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontSize: 12,
             ),
           ),
         ],

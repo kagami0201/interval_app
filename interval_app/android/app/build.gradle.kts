@@ -35,7 +35,22 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfigs {
+                create("release") {
+                    storeFile = file("../keystore/release.keystore")
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    keyAlias = "badminton_app"
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                }
+            }
+            buildTypes {
+                release {
+                    // TODO: Add your own signing config for the release build.
+                    // Signing with the debug keys for now, so `flutter run --release` works.
+                    //signingConfig = signingConfigs.getByName("debug")
+                    signingConfig = signingConfigs.getByName("release")
+                }
+            }
         }
     }
 }

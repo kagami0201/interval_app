@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:intl/intl.dart';
+import 'package:wakelock/wakelock.dart';
 import '../models/exercise.dart';
 import '../models/training_history.dart';
 import '../services/database_service.dart';
@@ -37,6 +38,8 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _startExercise();
+    // 画面を消灯しないように設定
+    Wakelock.enable();
   }
 
   @override
@@ -45,6 +48,8 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
     _timer?.cancel();
     _notificationService.cancelAllNotifications();
     _audioPlayer.dispose();
+    // 画面の消灯設定を元に戻す
+    Wakelock.disable();
     super.dispose();
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../models/exercise.dart';
 import '../services/database_service.dart';
 import 'training_screen.dart';
@@ -14,6 +16,7 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
   final DatabaseService _databaseService = DatabaseService();
   List<Exercise> _exercises = [];
   List<Exercise> _selectedExercises = [];
+  static const String _selectedExercisesKey = 'selected_exercises';
 
   @override
   void initState() {
@@ -23,9 +26,45 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
 
   Future<void> _loadExercises() async {
     final exercises = await _databaseService.getExercises();
+    final prefs = await SharedPreferences.getInstance();
+    final orderJson = prefs.getStringList('exercise_order');
+    
+    if (orderJson != null) {
+      final order = orderJson.map((id) => int.parse(id)).toList();
+      exercises.sort((a, b) {
+        final aIndex = order.indexOf(a.id!);
+        final bIndex = order.indexOf(b.id!);
+        if (aIndex == -1) return 1;
+        if (bIndex == -1) return -1;
+        return aIndex.compareTo(bIndex);
+      });
+    }
+    
     setState(() {
       _exercises = exercises;
     });
+    _loadSelectedExercises();
+  }
+
+  Future<void> _loadSelectedExercises() async {
+    final prefs = await SharedPreferences.getInstance();
+    final selectedExercisesJson = prefs.getStringList(_selectedExercisesKey);
+    if (selectedExercisesJson != null) {
+      final selectedExercises = selectedExercisesJson
+          .map((json) => Exercise.fromMap(jsonDecode(json)))
+          .toList();
+      setState(() {
+        _selectedExercises = selectedExercises;
+      });
+    }
+  }
+
+  Future<void> _saveSelectedExercises() async {
+    final prefs = await SharedPreferences.getInstance();
+    final selectedExercisesJson = _selectedExercises
+        .map((exercise) => jsonEncode(exercise.toMap()))
+        .toList();
+    await prefs.setStringList(_selectedExercisesKey, selectedExercisesJson);
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -36,18 +75,21 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
       final item = _selectedExercises.removeAt(oldIndex);
       _selectedExercises.insert(newIndex, item);
     });
+    _saveSelectedExercises();
   }
 
   void _addExercise(Exercise exercise) {
     setState(() {
       _selectedExercises.add(exercise);
     });
+    _saveSelectedExercises();
   }
 
   void _removeExercise(int index) {
     setState(() {
       _selectedExercises.removeAt(index);
     });
+    _saveSelectedExercises();
   }
 
   void _startTraining() {
@@ -102,8 +144,14 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
                               final exercise = _exercises[index];
                               return ListTile(
                                 title: Text(exercise.name),
-                                subtitle: Text(
-                                  '実施: ${exercise.workTime}秒 休息: ${exercise.restTime}秒 セット: ${exercise.sets}',
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    Text('実施: ${exercise.workTime}秒'),
+                                    Text('休息: ${exercise.restTime}秒'),
+                                    Text('セット: ${exercise.sets}'),
+                                  ],
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.add),
@@ -143,8 +191,14 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
                               return ListTile(
                                 key: ValueKey(exercise),
                                 title: Text(exercise.name),
-                                subtitle: Text(
-                                  '実施: ${exercise.workTime}秒 休息: ${exercise.restTime}秒 セット: ${exercise.sets}',
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    Text('実施: ${exercise.workTime}秒'),
+                                    Text('休息: ${exercise.restTime}秒'),
+                                    Text('セット: ${exercise.sets}'),
+                                  ],
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.remove),

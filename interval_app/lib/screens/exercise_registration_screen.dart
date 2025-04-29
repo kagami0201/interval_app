@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../models/exercise.dart';
 import '../services/database_service.dart';
 
@@ -19,6 +21,7 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
   final _setsController = TextEditingController();
   List<Exercise> _exercises = [];
   Exercise? _editingExercise;
+  static const String _exerciseOrderKey = 'exercise_order';
 
   @override
   void initState() {
@@ -37,9 +40,40 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
 
   Future<void> _loadExercises() async {
     final exercises = await _databaseService.getExercises();
+    final prefs = await SharedPreferences.getInstance();
+    final orderJson = prefs.getStringList(_exerciseOrderKey);
+    
+    if (orderJson != null) {
+      final order = orderJson.map((id) => int.parse(id)).toList();
+      exercises.sort((a, b) {
+        final aIndex = order.indexOf(a.id!);
+        final bIndex = order.indexOf(b.id!);
+        if (aIndex == -1) return 1;
+        if (bIndex == -1) return -1;
+        return aIndex.compareTo(bIndex);
+      });
+    }
+    
     setState(() {
       _exercises = exercises;
     });
+  }
+
+  Future<void> _saveExerciseOrder() async {
+    final prefs = await SharedPreferences.getInstance();
+    final order = _exercises.map((e) => e.id.toString()).toList();
+    await prefs.setStringList(_exerciseOrderKey, order);
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final item = _exercises.removeAt(oldIndex);
+      _exercises.insert(newIndex, item);
+    });
+    _saveExerciseOrder();
   }
 
   void _editExercise(Exercise exercise) {
@@ -95,14 +129,22 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
+            child: ReorderableListView.builder(
               itemCount: _exercises.length,
+              onReorder: _onReorder,
               itemBuilder: (context, index) {
                 final exercise = _exercises[index];
                 return ListTile(
+                  key: ValueKey(exercise),
                   title: Text(exercise.name),
-                  subtitle: Text(
-                    '実施: ${exercise.workTime}秒 休息: ${exercise.restTime}秒 セット: ${exercise.sets}',
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text('実施: ${exercise.workTime}秒'),
+                      Text('休息: ${exercise.restTime}秒'),
+                      Text('セット: ${exercise.sets}'),
+                    ],
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -182,9 +224,6 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
-                    ),
                     child: Text(_editingExercise != null ? '更新' : '登録'),
                   ),
                 ],

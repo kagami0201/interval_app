@@ -103,6 +103,7 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
 
       if (_editingExercise != null) {
         await _databaseService.updateExercise(exercise);
+        await _databaseService.updateSelectedExercise(exercise);
       } else {
         await _databaseService.insertExercise(exercise);
       }

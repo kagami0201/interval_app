@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 import 'dart:convert';
 import '../models/exercise.dart';
 import '../models/training_history.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -153,5 +154,29 @@ class DatabaseService {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<void> updateSelectedExercise(Exercise exercise) async {
+    final prefs = await SharedPreferences.getInstance();
+    final selectedExercisesJson = prefs.getStringList('selected_exercises');
+    if (selectedExercisesJson != null) {
+      final selectedExercises = selectedExercisesJson
+          .map((json) => Exercise.fromMap(jsonDecode(json)))
+          .toList();
+      
+      // 選択済み種目の中から更新対象の種目を探して更新
+      final updatedExercises = selectedExercises.map((e) {
+        if (e.id == exercise.id) {
+          return exercise;
+        }
+        return e;
+      }).toList();
+      
+      // 更新した種目リストを保存
+      final updatedJson = updatedExercises
+          .map((e) => jsonEncode(e.toMap()))
+          .toList();
+      await prefs.setStringList('selected_exercises', updatedJson);
+    }
   }
 } 

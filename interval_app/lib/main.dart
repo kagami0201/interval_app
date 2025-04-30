@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'screens/home_screen.dart';
 import 'services/notification_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -11,10 +11,41 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // アプリ起動時に画面OFF機能を無効化
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // アプリ終了時に画面OFF機能を有効化
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // アプリがバックグラウンドに移行した時に画面OFF機能を有効化
+      WakelockPlus.disable();
+    } else if (state == AppLifecycleState.resumed) {
+      // アプリがフォアグラウンドに戻った時に画面OFF機能を無効化
+      WakelockPlus.enable();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -44,6 +44,7 @@ dependencies:
   audioplayers: ^5.2.1
   google_mobile_ads: ^4.0.0
   table_calendar: ^3.0.9
+  wakelock_plus: ^1.1.4
 
 dev_dependencies:
   flutter_test:

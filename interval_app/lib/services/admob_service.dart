@@ -9,10 +9,10 @@ class AdmobService {
   InterstitialAd? _interstitialAd;
   bool _isLoaded = false;
 
-  final String _androidInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; //Androidテスト用広告ユニットID
-  final String _iosInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; // iOSスト用広告ユニットID
-  //final String _androidInterstitialAdUnitId = 'ca-app-pub-7342113297911832/2443650722'; // Android用
-  //final String _iosInterstitialAdUnitId = 'ca-app-pub-7342113297911832/6452012642'; // iOS用
+  //final String _androidInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; //Androidテスト用広告ユニットID
+  //final String _iosInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; // iOSスト用広告ユニットID
+  final String _androidInterstitialAdUnitId = 'ca-app-pub-7342113297911832/2443650722'; // Android用
+  final String _iosInterstitialAdUnitId = 'ca-app-pub-7342113297911832/6452012642'; // iOS用
 
   String get interstitialAdUnitId =>
       Platform.isAndroid ? _androidInterstitialAdUnitId : _iosInterstitialAdUnitId;

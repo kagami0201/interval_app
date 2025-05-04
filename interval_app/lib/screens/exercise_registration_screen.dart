@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/exercise.dart';
 import '../services/database_service.dart';
 
@@ -126,6 +127,22 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
       appBar: AppBar(
         title: const Text('種目登録'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.privacy_tip),
+            onPressed: () async {
+              final Uri url = Uri.parse('https://docs.google.com/document/d/1aRiGjKz1NPu8mc46OkaSQ-G-TtECwo7i-JHpjypRblY/edit?usp=sharing');
+              if (!await launchUrl(url)) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('プライバシーポリシーを開けませんでした')),
+                  );
+                }
+              }
+            },
+            tooltip: 'プライバシーポリシー',
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: true,
       body: SafeArea(

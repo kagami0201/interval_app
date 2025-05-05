@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/exercise.dart';
 import '../services/database_service.dart';
+import 'privacy_policy_screen.dart';
 
 class ExerciseRegistrationScreen extends StatefulWidget {
   const ExerciseRegistrationScreen({super.key});
@@ -130,17 +131,14 @@ class _ExerciseRegistrationScreenState extends State<ExerciseRegistrationScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.privacy_tip),
-            onPressed: () async {
-              final Uri url = Uri.parse('https://docs.google.com/document/d/1aRiGjKz1NPu8mc46OkaSQ-G-TtECwo7i-JHpjypRblY/edit?usp=sharing');
-              if (!await launchUrl(url)) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('プライバシーポリシーを開けませんでした')),
-                  );
-                }
-              }
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyScreen(),
+                ),
+              );
             },
-            tooltip: 'プライバシーポリシー',
           ),
         ],
       ),

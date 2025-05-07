@@ -97,7 +97,12 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
           _timer?.cancel();
           if (_isWorkTime) {
             _playSoundAndVibrate(1);
-            _startRest();
+            if (_currentExerciseIndex == widget.exercises.length - 1 && 
+                _currentSet == widget.exercises[_currentExerciseIndex].sets) {
+              _nextSet();
+            } else {
+              _startRest();
+            }
           } else {
             _playSoundAndVibrate(2);
             _nextSet();

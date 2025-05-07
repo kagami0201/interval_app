@@ -194,7 +194,7 @@ class _IntervalSettingScreenState extends State<IntervalSettingScreen> {
                       itemBuilder: (context, index) {
                         final exercise = _selectedExercises[index];
                         return Card(
-                          key: ValueKey(exercise),
+                          key: ValueKey('${exercise.id}_${index}'),
                           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                           child: ListTile(
                             leading: const Icon(Icons.drag_handle),

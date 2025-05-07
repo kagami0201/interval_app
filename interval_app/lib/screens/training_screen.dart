@@ -155,6 +155,19 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
     await _databaseService.insertTrainingHistory(history);
   }
 
+  void _moveToExercise(int index) {
+    if (index == _currentExerciseIndex) return; // 現在の種目は何もしない
+    
+    setState(() {
+      _currentExerciseIndex = index;
+      _currentSet = 1;
+      _isWorkTime = true;
+      _remainingTime = widget.exercises[index].workTime;
+      _timer?.cancel();
+      _startTimer();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentExercise = widget.exercises[_currentExerciseIndex];
@@ -322,6 +335,12 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
                             subtitle: Text(
                               '${exercise.workTime}秒 × ${exercise.sets}セット（休息${exercise.restTime}秒）',
                             ),
+                            onTap: () {
+                              // 完了済みの種目はタップできない
+                              if (!isCompleted) {
+                                _moveToExercise(index);
+                              }
+                            },
                           ),
                         );
                       },

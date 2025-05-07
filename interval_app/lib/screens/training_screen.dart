@@ -192,6 +192,44 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
                     '$_remainingTime 秒',
                     style: Theme.of(context).textTheme.displayLarge,
                   ),
+                  const SizedBox(height: 16),
+                  // 時間調整ボタン
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _remainingTime += 10;
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('+10秒'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.secondary,
+                          foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            if (_remainingTime > 10) {
+                              _remainingTime -= 10;
+                            } else {
+                              _remainingTime = 0;
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.skip_next),
+                        label: const Text('-10秒'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          foregroundColor: Theme.of(context).colorScheme.onError,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 32),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

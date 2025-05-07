@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'トレーニングタイマー',
+      title: 'Myインターバルタイマー',
       theme: ThemeData(
         // This is the theme of your application.
         //

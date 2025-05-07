@@ -303,6 +303,7 @@ class _TrainingScreenState extends State<TrainingScreen> with WidgetsBindingObse
                         final isCompleted = index < _currentExerciseIndex;
 
                         return Container(
+                          key: ValueKey('exercise_${exercise.id}'),
                           margin: const EdgeInsets.symmetric(
                             horizontal: 16.0,
                             vertical: 4.0,

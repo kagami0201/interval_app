@@ -109,13 +109,33 @@ class DatabaseService {
     );
   }
 
-  Future<int> deleteExercise(int id) async {
+  Future<void> deleteExercise(int id) async {
     final db = await database;
-    return await db.delete(
+    await db.delete(
       'exercises',
       where: 'id = ?',
       whereArgs: [id],
     );
+    
+    // SharedPreferencesから選択済み種目を削除
+    final prefs = await SharedPreferences.getInstance();
+    final selectedExercisesJson = prefs.getStringList('selected_exercises');
+    if (selectedExercisesJson != null) {
+      final selectedExercises = selectedExercisesJson
+          .map((json) => Exercise.fromMap(jsonDecode(json)))
+          .toList();
+      
+      // 削除対象の種目を除外
+      final updatedExercises = selectedExercises
+          .where((e) => e.id != id)
+          .toList();
+      
+      // 更新した種目リストを保存
+      final updatedJson = updatedExercises
+          .map((e) => jsonEncode(e.toMap()))
+          .toList();
+      await prefs.setStringList('selected_exercises', updatedJson);
+    }
   }
 
   // Training History operations
